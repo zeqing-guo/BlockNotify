@@ -18,7 +18,7 @@ func main() {
 		cli.StringFlag{Name: "redis_url", Value: "localhost:6379", Usage: "redis url", EnvVar: "REDIS_URL"},
 		cli.StringFlag{Name: "endpoint_url", Value: "localhost:8545", Usage: "ethereum endpoint url", EnvVar: "ENDPOINT_URL"},
 		cli.StringFlag{Name: "log_level", Value: "debug", Usage: "log level", EnvVar: "LOG_LEVEL"},
-		cli.StringFlag{Name: "key", Value: "block", Usage: "the key for subscribe", EnvVar: "KEY"},
+		cli.StringFlag{Name: "key", Value: "block.new", Usage: "the key for subscribe", EnvVar: "KEY"},
 	}
 	app.Action = run
 	app.Run(os.Args)
@@ -61,7 +61,7 @@ func run(ctx *cli.Context) error {
 				log.WithError(err).Fatal("fail to get new block")
 			case header := <-headCh:
 				log.Infof("get head of block#%d", header.Number.Uint64())
-				err := rClient.Publish(c, ctx.String("KEY"), header.Number.Uint64()).Err()
+				err := rClient.Publish(c, ctx.String("key"), header.Number.Uint64()).Err()
 				if err != nil {
 					log.WithError(err).Fatal("fail to publish new block")
 				}
